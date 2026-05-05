@@ -156,7 +156,7 @@ If you are on the latest firmware, the plugin will update both LEDs.
 First try reinstalling or updating the plugin to the latest version, there's an update button at the bottom of the plugin. You can also re-run the installer to update:
 
 ```
-curl -L https://github.com/aarron-lee/LegionGoRemapper/raw/main/install.sh | sh
+curl -L https://github.com/mrsasy89/LegionGoRemapper/raw/main/install.sh | sh
 ```
 
 If this doesn't fix your issue, next try deleting your `$HOME/homebrew/settings/LegionGoRemapper/settings.json` file, and rebooting.
