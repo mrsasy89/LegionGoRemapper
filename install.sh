@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 # does the following:
 # - RGB control via LegionGoRemapper Decky Plugin
+# - Charge limit configurabile (60-100%) - fork by mrsasy89
 if [ "$EUID" -eq 0 ]
   then echo "Please do not run as root"
   exit
@@ -28,9 +29,9 @@ EOF
 
 fi
 
-echo "installing LegionGoRemapper plugin for RGB control"
-# download + install Legion go remapper
-curl -L $(curl -s https://api.github.com/repos/aarron-lee/LegionGoRemapper/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o $HOME/LegionGoRemapper.tar.gz
+echo "installing LegionGoRemapper plugin (fork con charge limit configurabile)"
+# download + install Legion go remapper dalla fork con charge limit configurabile
+curl -L $(curl -s https://api.github.com/repos/mrsasy89/LegionGoRemapper/releases/latest | grep "browser_download_url" | cut -d '"' -f 4) -o $HOME/LegionGoRemapper.tar.gz
 sudo tar -xzf LegionGoRemapper.tar.gz -C $HOME/homebrew/plugins
 
 # install complete, remove build dir
