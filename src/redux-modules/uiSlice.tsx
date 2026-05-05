@@ -27,6 +27,7 @@ type UiStateType = {
   currentGameId: undefined | string;
   currentDisplayName: undefined | string;
   chargeLimitEnabled?: boolean;
+  chargeLimitPercent?: number;
   alsEnabled?: boolean;
   pluginVersionNum?: string;
   alsInfo: {
@@ -43,6 +44,7 @@ const initialState: UiStateType = {
   currentGameId: undefined,
   currentDisplayName: undefined,
   pluginVersionNum: '',
+  chargeLimitPercent: 80,
   alsInfo: {
     pollingRate: DEFAULT_POLLING_RATE,
     smoothTime: DEFAULT_SMOOTH_TIME,
@@ -61,6 +63,9 @@ export const uiSlice = createSlice({
     },
     setChargeLimit(state, action: PayloadAction<boolean>) {
       state.chargeLimitEnabled = action.payload;
+    },
+    setChargeLimitPercent(state, action: PayloadAction<number>) {
+      state.chargeLimitPercent = action.payload;
     },
     setAlsEnabled(state, action: PayloadAction<boolean>) {
       state.alsEnabled = action.payload;
@@ -93,6 +98,9 @@ export const uiSlice = createSlice({
       }
       if (action.payload?.chargeLimitEnabled) {
         state.chargeLimitEnabled = Boolean(action.payload?.chargeLimitEnabled);
+      }
+      if (action.payload?.chargeLimitPercent) {
+        state.chargeLimitPercent = Number(action.payload.chargeLimitPercent);
       }
       if (action.payload?.alsEnabled) {
         state.alsEnabled = Boolean(action.payload?.alsEnabled);
@@ -129,6 +137,9 @@ export const selectCurrentGameDisplayName = (state: RootState) =>
 
 export const selectChargeLimitEnabled = (state: RootState) =>
   Boolean(state.ui?.chargeLimitEnabled);
+
+export const selectChargeLimitPercent = (state: RootState) =>
+  state.ui?.chargeLimitPercent ?? 80;
 
 export const selectAlsEnabled = (state: RootState) =>
   Boolean(state.ui?.alsEnabled);
@@ -176,9 +187,16 @@ export const uiSliceMiddleware =
         saveSettings({ alsInfo });
       }
 
-      if (type === uiSlice.actions.setChargeLimit.type) {
-        setChargeLimit(action.payload);
+      if (
+        type === uiSlice.actions.setChargeLimit.type ||
+        type === uiSlice.actions.setChargeLimitPercent.type
+      ) {
+        const state = _store.getState();
+        const enabled = state.ui.chargeLimitEnabled;
+        const percent = state.ui.chargeLimitPercent ?? 80;
+        setChargeLimit(enabled, percent);
       }
+
       if (type === uiSlice.actions.setAlsEnabled.type) {
         const enabled = action.payload;
         setAlsEnabled(enabled);

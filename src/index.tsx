@@ -3,6 +3,7 @@ import {
   PanelSection,
   PanelSectionRow,
   ServerAPI,
+  SliderField,
   staticClasses,
   ToggleField
 } from 'decky-frontend-lib';
@@ -26,7 +27,8 @@ import { useSupportsCustomFanCurves } from './hooks/fan';
 
 const Content: VFC<{ serverAPI?: ServerAPI }> = memo(() => {
   const loading = useSelector(getInitialLoading);
-  const { chargeLimitEnabled, setChargeLimit } = useChargeLimitEnabled();
+  const { chargeLimitEnabled, chargeLimitPercent, setChargeLimit, setChargeLimitPercent } =
+    useChargeLimitEnabled();
   const supportsAcpiCall = useSupportsCustomFanCurves();
   if (loading) {
     return null;
@@ -34,14 +36,33 @@ const Content: VFC<{ serverAPI?: ServerAPI }> = memo(() => {
   return (
     <>
       {supportsAcpiCall && (
-        <PanelSection>
+        <PanelSection title="Battery">
           <PanelSectionRow>
             <ToggleField
-              label="Enable Charge Limit (80%)"
+              label="Limite di carica batteria"
+              description={chargeLimitEnabled ? `Limite attivo al ${chargeLimitPercent}%` : 'Disabilitato'}
               checked={chargeLimitEnabled}
               onChange={setChargeLimit}
             />
           </PanelSectionRow>
+          {chargeLimitEnabled && (
+            <PanelSectionRow>
+              <SliderField
+                label={`Limite: ${chargeLimitPercent}%`}
+                min={60}
+                max={100}
+                step={5}
+                value={chargeLimitPercent}
+                onChange={setChargeLimitPercent}
+                notchCount={9}
+                notchLabels={[
+                  { notchIndex: 0, label: '60%' },
+                  { notchIndex: 4, label: '80%' },
+                  { notchIndex: 8, label: '100%' }
+                ]}
+              />
+            </PanelSectionRow>
+          )}
         </PanelSection>
       )}
       <ErrorBoundary title="Adaptive Brightness">

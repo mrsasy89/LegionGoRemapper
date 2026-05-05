@@ -138,55 +138,69 @@ def get_charge_limit():
 # echo '\_SB.GZFD.WMAE 0 0x12 {0x01, 0x00, 0x01, 0x03, 0x01, 0x00, 0x00, 0x00}' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call   
 # off        
 # echo '\_SB.GZFD.WMAE 0 0x12 {0x01, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00}' | sudo tee /proc/acpi/call
-# 80% charge limit
+
+def set_charge_limit_percent(percent: int):
+    """Imposta il limite di carica a una percentuale specifica.
+    percent=0 disabilita il limite, altrimenti accetta valori tra 60 e 100.
+    """
+    decky_plugin.logger.info(f"Setting charge limit to {percent}%.")
+
+    if percent == 0:
+        # Disabilita il limite di carica
+        return call(
+            r"\_SB.GZFD.WMAE",
+            [
+                0,
+                0x12,
+                bytes(
+                    [
+                        0x01,
+                        0x00,
+                        0x01,
+                        0x03,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00
+                    ]
+                ),
+            ],
+        )
+    else:
+        # Prima abilita il toggle charge limit
+        result = call(
+            r"\_SB.GZFD.WMAE",
+            [
+                0,
+                0x12,
+                bytes(
+                    [
+                        0x01,
+                        0x00,
+                        0x01,
+                        0x03,
+                        0x01,
+                        0x00,
+                        0x00,
+                        0x00
+                    ]
+                ),
+            ],
+        )
+        if not result:
+            return False
+        sleep(0.3)
+        # Poi imposta la percentuale desiderata tramite set_feature
+        return set_feature(0x03010001, percent)
+
+
 def set_charge_limit(enabled: bool):
+    """Retrocompatibilità: abilita/disabilita il limite fisso all'80%."""
+    if enabled:
+        return set_charge_limit_percent(80)
+    else:
+        return set_charge_limit_percent(0)
 
-    current_charge_limit = get_charge_limit()
-
-    # decky_plugin.logger.info(f'charge limit {current_charge_limit} {current_charge_limit == 0}')
-
-    if enabled and current_charge_limit == 0:
-        return call(
-            r"\_SB.GZFD.WMAE",
-            [
-                0,
-                0x12,
-                bytes(
-                    [
-                        0x01,
-                        0x00,
-                        0x01,
-                        0x03,
-                        0x01,
-                        0x00,
-                        0x00,
-                        0x00
-                    ]
-                ),
-            ],
-        )
-    elif not enabled and current_charge_limit == 1:
-        return call(
-            r"\_SB.GZFD.WMAE",
-            [
-                0,
-                0x12,
-                bytes(
-                    [
-                        0x01,
-                        0x00,
-                        0x01,
-                        0x03,
-                        0x00,
-                        0x00,
-                        0x00,
-                        0x00
-                    ]
-                ),
-            ],
-        )
-    # no changes required
-    return True
 
 def call(method: str, args: Sequence[bytes | int], risky: bool = True):
     cmd = method

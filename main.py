@@ -45,7 +45,8 @@ class Plugin:
         results = settings.get_settings()
 
         if results.get("chargeLimitEnabled", False):
-            legion_space.set_charge_limit(True)
+            saved_percent = results.get("chargeLimitPercent", 80)
+            legion_space.set_charge_limit_percent(saved_percent)
 
         try:
             results['pluginVersionNum'] = f'{decky_plugin.DECKY_PLUGIN_VERSION}'
@@ -162,11 +163,14 @@ class Plugin:
 
         legion_space.set_power_light(enabled)
 
-    async def set_charge_limit(self, enabled):
+    async def set_charge_limit(self, enabled: bool, percent: int = 80):
         try:
             settings.set_setting('chargeLimitEnabled', enabled)
-
-            legion_space.set_charge_limit(enabled)
+            settings.set_setting('chargeLimitPercent', percent if enabled else 0)
+            if enabled:
+                legion_space.set_charge_limit_percent(percent)
+            else:
+                legion_space.set_charge_limit_percent(0)
         except Exception as e:
             decky_plugin.logger.error(f'error while setting charge limit {e}')
 

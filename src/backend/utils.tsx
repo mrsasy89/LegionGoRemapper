@@ -55,9 +55,10 @@ const createSetPowerLed =
   };
 
 const createSetChargeLimit =
-  (serverAPI: ServerAPI) => async (enabled: boolean) => {
+  (serverAPI: ServerAPI) => async (enabled: boolean, percent: number = 80) => {
     await serverAPI.callPluginMethod(ServerAPIMethods.SET_CHARGE_LIMIT, {
-      enabled
+      enabled,
+      percent
     });
   };
 
