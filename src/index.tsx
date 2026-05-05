@@ -39,8 +39,8 @@ const Content: VFC<{ serverAPI?: ServerAPI }> = memo(() => {
         <PanelSection title="Battery">
           <PanelSectionRow>
             <ToggleField
-              label="Limite di carica batteria"
-              description={chargeLimitEnabled ? `Limite attivo al ${chargeLimitPercent}%` : 'Disabilitato'}
+              label="Battery Charge Limit"
+              description={chargeLimitEnabled ? `Charge limit active at ${chargeLimitPercent}%` : 'Disabled'}
               checked={chargeLimitEnabled}
               onChange={setChargeLimit}
             />
@@ -48,7 +48,7 @@ const Content: VFC<{ serverAPI?: ServerAPI }> = memo(() => {
           {chargeLimitEnabled && (
             <PanelSectionRow>
               <SliderField
-                label={`Limite: ${chargeLimitPercent}%`}
+                label={`Limit: ${chargeLimitPercent}%`}
                 min={60}
                 max={100}
                 step={5}
