@@ -57,7 +57,7 @@ For the **Legion Go S**, see Huesync for RGB controls: https://github.com/honjow
 Run the following in terminal, then reboot. Note that this works both for installing or updating the plugin
 
 ```
-curl -L https://github.com/aarron-lee/LegionGoRemapper/raw/main/install.sh | sh
+curl -L https://github.com/mrsasy89/LegionGoRemapper/raw/main/install.sh | sh
 ```
 
 ### Manual Install
